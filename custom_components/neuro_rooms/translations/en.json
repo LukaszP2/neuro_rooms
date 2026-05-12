@@ -1,0 +1,200 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Engine Neuro Rooms",
+        "description": "Create the main Neuro Rooms engine.",
+        "data": {
+          "engine_name": "Engine name",
+          "auto_discovery": "Enable auto discovery"
+        }
+      },
+      "engine_autodiscovery_confirm": {
+        "title": "Confirm auto discovery",
+        "description": "Enabling auto discovery may overwrite your current room setup.",
+        "data": {
+          "confirm": "I understand and want to continue"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Only one Engine Neuro Rooms instance is allowed"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Neuro Rooms",
+        "description": "Menu-based configuration",
+        "menu_options": {
+          "engine": "Engine",
+          "rooms": "Rooms",
+          "modes": "Modes",
+          "modifiers": "Modifiers"
+        }
+      },
+      "engine": {
+        "title": "Engine",
+        "data": {
+          "engine_name": "Engine name",
+          "auto_discovery": "Enable auto discovery"
+        }
+      },
+      "engine_autodiscovery_confirm": {
+        "title": "Confirm auto discovery",
+        "description": "Enabling auto discovery may overwrite your current room setup.",
+        "data": {
+          "confirm": "I understand and want to continue"
+        }
+      },
+      "rooms": {
+        "title": "Rooms",
+        "menu_options": {
+          "rooms_add": "Add room",
+          "rooms_discover": "Auto-discover rooms",
+          "rooms_edit": "Edit room",
+          "rooms_remove": "Remove room",
+          "init": "Back"
+        }
+      },
+      "rooms_add": {
+        "title": "Add room",
+        "data": {
+          "name": "Room / area",
+          "mode": "Mode",
+          "modifier": "Modifier"
+        }
+      },
+      "rooms_discover": {
+        "title": "Auto-discover rooms",
+        "data": {
+          "run_discovery": "Run discovery now"
+        }
+      },
+      "rooms_discover_confirm": {
+        "title": "Confirm room discovery",
+        "description": "Running discovery may add or replace room setup values.",
+        "data": {
+          "confirm": "I understand and want to continue"
+        }
+      },
+      "rooms_edit": {
+        "title": "Edit room",
+        "data": {
+          "id": "Room"
+        }
+      },
+      "rooms_edit_form": {
+        "title": "Edit room",
+        "data": {
+          "name": "Room / area",
+          "mode": "Mode",
+          "modifier": "Modifier"
+        }
+      },
+      "rooms_remove": {
+        "title": "Remove room",
+        "data": {
+          "id": "Room"
+        }
+      },
+      "rooms_remove_confirm": {
+        "title": "Confirm room removal",
+        "description": "Are you sure you want to remove this room?",
+        "data": {
+          "confirm": "Yes, remove it"
+        }
+      },
+      "modes": {
+        "title": "Modes",
+        "menu_options": {
+          "modes_add": "Add mode",
+          "modes_edit": "Edit mode",
+          "modes_remove": "Remove mode",
+          "init": "Back"
+        }
+      },
+      "modes_add": {
+        "title": "Add mode",
+        "data": {
+          "mode_name": "Mode name",
+          "mode_lighting": "Supports lighting",
+          "mode_hvac": "Supports HVAC",
+          "mode_media": "Supports media"
+        }
+      },
+      "modes_edit": {
+        "title": "Edit mode",
+        "data": {
+          "id": "Mode"
+        }
+      },
+      "modes_edit_form": {
+        "title": "Edit mode",
+        "data": {
+          "mode_name": "Mode name",
+          "mode_lighting": "Supports lighting",
+          "mode_hvac": "Supports HVAC",
+          "mode_media": "Supports media"
+        }
+      },
+      "modes_remove": {
+        "title": "Remove mode",
+        "data": {
+          "id": "Mode"
+        }
+      },
+      "modes_remove_confirm": {
+        "title": "Confirm mode removal",
+        "description": "Are you sure you want to remove this mode?",
+        "data": {
+          "confirm": "Yes, remove it"
+        }
+      },
+      "modifiers": {
+        "title": "Modifiers",
+        "menu_options": {
+          "modifiers_add": "Add modifier",
+          "modifiers_edit": "Edit modifier",
+          "modifiers_remove": "Remove modifier",
+          "init": "Back"
+        }
+      },
+      "modifiers_add": {
+        "title": "Add modifier",
+        "data": {
+          "modifier_name": "Modifier name",
+          "modifier_base_mode": "Base mode",
+          "modifier_priority": "Priority"
+        }
+      },
+      "modifiers_edit": {
+        "title": "Edit modifier",
+        "data": {
+          "id": "Modifier"
+        }
+      },
+      "modifiers_edit_form": {
+        "title": "Edit modifier",
+        "data": {
+          "modifier_name": "Modifier name",
+          "modifier_base_mode": "Base mode",
+          "modifier_priority": "Priority"
+        }
+      },
+      "modifiers_remove": {
+        "title": "Remove modifier",
+        "data": {
+          "id": "Modifier"
+        }
+      },
+      "modifiers_remove_confirm": {
+        "title": "Confirm modifier removal",
+        "description": "Are you sure you want to remove this modifier?",
+        "data": {
+          "confirm": "Yes, remove it"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Engine Neuro Rooms",
+        "description": "Utwórz główny silnik Neuro Rooms.",
+        "data": {
+          "engine_name": "Nazwa silnika",
+          "auto_discovery": "Włącz auto discovery"
+        }
+      },
+      "engine_autodiscovery_confirm": {
+        "title": "Potwierdź auto discovery",
+        "description": "Włączenie auto discovery może nadpisać obecną konfigurację pokoi.",
+        "data": {
+          "confirm": "Rozumiem i chcę kontynuować"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Dozwolona jest tylko jedna instancja Engine Neuro Rooms"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Neuro Rooms",
+        "description": "Konfiguracja z menu",
+        "menu_options": {
+          "engine": "Silnik",
+          "rooms": "Pokoje",
+          "modes": "Mode",
+          "modifiers": "Modyfikatory"
+        }
+      },
+      "engine": {
+        "title": "Silnik",
+        "data": {
+          "engine_name": "Nazwa silnika",
+          "auto_discovery": "Włącz auto discovery"
+        }
+      },
+      "engine_autodiscovery_confirm": {
+        "title": "Potwierdź auto discovery",
+        "description": "Włączenie auto discovery może nadpisać obecną konfigurację pokoi.",
+        "data": {
+          "confirm": "Rozumiem i chcę kontynuować"
+        }
+      },
+      "rooms": {
+        "title": "Pokoje",
+        "menu_options": {
+          "rooms_add": "Dodaj pokój",
+          "rooms_discover": "Wykryj pokoje automatycznie",
+          "rooms_edit": "Edytuj pokój",
+          "rooms_remove": "Usuń pokój",
+          "init": "Wstecz"
+        }
+      },
+      "rooms_add": {
+        "title": "Dodaj pokój",
+        "data": {
+          "name": "Pokój / obszar",
+          "mode": "Mode",
+          "modifier": "Modifier"
+        }
+      },
+      "rooms_discover": {
+        "title": "Auto-wykrywanie pokoi",
+        "data": {
+          "run_discovery": "Uruchom wykrywanie teraz"
+        }
+      },
+      "rooms_discover_confirm": {
+        "title": "Potwierdź wykrywanie pokoi",
+        "description": "Uruchomienie wykrywania może dodać lub zastąpić ustawienia pokoi.",
+        "data": {
+          "confirm": "Rozumiem i chcę kontynuować"
+        }
+      },
+      "rooms_edit": {
+        "title": "Edytuj pokój",
+        "data": {
+          "id": "Pokój"
+        }
+      },
+      "rooms_edit_form": {
+        "title": "Edytuj pokój",
+        "data": {
+          "name": "Pokój / obszar",
+          "mode": "Mode",
+          "modifier": "Modifier"
+        }
+      },
+      "rooms_remove": {
+        "title": "Usuń pokój",
+        "data": {
+          "id": "Pokój"
+        }
+      },
+      "rooms_remove_confirm": {
+        "title": "Potwierdź usunięcie pokoju",
+        "description": "Na pewno chcesz usunąć ten pokój?",
+        "data": {
+          "confirm": "Tak, usuń"
+        }
+      },
+      "modes": {
+        "title": "Mode",
+        "menu_options": {
+          "modes_add": "Dodaj mode",
+          "modes_edit": "Edytuj mode",
+          "modes_remove": "Usuń mode",
+          "init": "Wstecz"
+        }
+      },
+      "modes_add": {
+        "title": "Dodaj mode",
+        "data": {
+          "mode_name": "Nazwa mode",
+          "mode_lighting": "Obsługuje światło",
+          "mode_hvac": "Obsługuje HVAC",
+          "mode_media": "Obsługuje multimedia"
+        }
+      },
+      "modes_edit": {
+        "title": "Edytuj mode",
+        "data": {
+          "id": "Mode"
+        }
+      },
+      "modes_edit_form": {
+        "title": "Edytuj mode",
+        "data": {
+          "mode_name": "Nazwa mode",
+          "mode_lighting": "Obsługuje światło",
+          "mode_hvac": "Obsługuje HVAC",
+          "mode_media": "Obsługuje multimedia"
+        }
+      },
+      "modes_remove": {
+        "title": "Usuń mode",
+        "data": {
+          "id": "Mode"
+        }
+      },
+      "modes_remove_confirm": {
+        "title": "Potwierdź usunięcie mode",
+        "description": "Na pewno chcesz usunąć ten mode?",
+        "data": {
+          "confirm": "Tak, usuń"
+        }
+      },
+      "modifiers": {
+        "title": "Modyfikatory",
+        "menu_options": {
+          "modifiers_add": "Dodaj modyfikator",
+          "modifiers_edit": "Edytuj modyfikator",
+          "modifiers_remove": "Usuń modyfikator",
+          "init": "Wstecz"
+        }
+      },
+      "modifiers_add": {
+        "title": "Dodaj modyfikator",
+        "data": {
+          "modifier_name": "Nazwa modyfikatora",
+          "modifier_base_mode": "Bazowy mode",
+          "modifier_priority": "Priorytet"
+        }
+      },
+      "modifiers_edit": {
+        "title": "Edytuj modyfikator",
+        "data": {
+          "id": "Modyfikator"
+        }
+      },
+      "modifiers_edit_form": {
+        "title": "Edytuj modyfikator",
+        "data": {
+          "modifier_name": "Nazwa modyfikatora",
+          "modifier_base_mode": "Bazowy mode",
+          "modifier_priority": "Priorytet"
+        }
+      },
+      "modifiers_remove": {
+        "title": "Usuń modyfikator",
+        "data": {
+          "id": "Modyfikator"
+        }
+      },
+      "modifiers_remove_confirm": {
+        "title": "Potwierdź usunięcie modyfikatora",
+        "description": "Na pewno chcesz usunąć ten modyfikator?",
+        "data": {
+          "confirm": "Tak, usuń"
+        }
+      }
+    }
+  }
+}

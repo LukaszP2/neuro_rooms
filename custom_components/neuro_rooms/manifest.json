@@ -1,0 +1,17 @@
+{
+  "domain": "neuro_rooms",
+  "name": "Neuro Rooms",
+  "version": "0.1.1",
+  "documentation": "https://github.com/LukaszP2/neuro_rooms",
+  "issue_tracker": "https://github.com/LukaszP2/neuro_rooms/issues",
+  "requirements": [],
+  "codeowners": ["@LukaszP2"],
+  "config_flow": true,
+  "iot_class": "local_push",
+  "integration_type": "hub",
+  "dependencies": [],
+  "homeassistant": "2026.5.0",
+  "quality_scale": "custom",
+  "loggers": ["custom_components.neuro_rooms"],
+  "diagnostics": true
+}
