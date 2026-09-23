@@ -103,7 +103,7 @@ export class NeuroRoomsCard extends LitElement {
     // Actually, HA state objects don't expose area_id or device_id directly. We need device/entity registry.
     // However, we put `room_config` in extra_state_attributes!
     
-    const areasWithRooms = new Map();
+    const areaIdToSensors = new Map();
     const unassignedRooms: any[] = [];
 
     sensors.forEach((s: any) => {
@@ -111,35 +111,35 @@ export class NeuroRoomsCard extends LitElement {
       const areaId = config.area_id;
       
       if (areaId) {
-        if (!areasWithRooms.has(areaId)) {
-          areasWithRooms.set(areaId, []);
+        if (!areaIdToSensors.has(areaId)) {
+          areaIdToSensors.set(areaId, []);
         }
-        areasWithRooms.get(areaId).push(s);
+        areaIdToSensors.get(areaId).push(s);
       } else {
         unassignedRooms.push(s);
       }
     });
 
-    // Group areas by floor
+    // Group areas by floor, respecting _areas array order
     const floorsWithAreas = new Map();
     const unassignedAreas: any[] = [];
 
-    areasWithRooms.forEach((sensorsInArea, areaId) => {
-      const areaInfo = this._areas.find(a => a.area_id === areaId);
-      if (areaInfo && areaInfo.floor_id) {
-        if (!floorsWithAreas.has(areaInfo.floor_id)) {
-          floorsWithAreas.set(areaInfo.floor_id, []);
+    this._areas.forEach(areaInfo => {
+      const sensorsInArea = areaIdToSensors.get(areaInfo.area_id);
+      if (sensorsInArea) {
+        if (areaInfo.floor_id) {
+          if (!floorsWithAreas.has(areaInfo.floor_id)) {
+            floorsWithAreas.set(areaInfo.floor_id, []);
+          }
+          floorsWithAreas.get(areaInfo.floor_id).push({ area: areaInfo, rooms: sensorsInArea });
+        } else {
+          unassignedAreas.push({ area: areaInfo, rooms: sensorsInArea });
         }
-        floorsWithAreas.get(areaInfo.floor_id).push({ area: areaInfo, rooms: sensorsInArea });
-      } else {
-        unassignedAreas.push({ area: areaInfo || { name: 'Unknown Area' }, rooms: sensorsInArea });
       }
     });
 
-    // Sort floors based on HA floor order (level)
-    const sortedFloors = [...this._floors]
-      .filter(f => floorsWithAreas.has(f.floor_id))
-      .sort((a, b) => (a.level || 0) - (b.level || 0));
+    // Filter floors that have neuro rooms, strictly preserving _floors array order
+    const sortedFloors = this._floors.filter(f => floorsWithAreas.has(f.floor_id));
 
     return { sortedFloors, floorsWithAreas, unassignedAreas, unassignedRooms };
   }

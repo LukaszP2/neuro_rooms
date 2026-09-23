@@ -67,6 +67,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         [StaticPathConfig("/neuro_rooms_frontend", str(frontend_path), cache_headers=False)]
     )
 
+    await engine.async_start()
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
@@ -75,5 +77,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload Neuro Rooms config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
-        hass.data.get(DOMAIN, {}).pop(entry.entry_id, None)
+        data = hass.data.get(DOMAIN, {}).pop(entry.entry_id, None)
+        if data and "engine" in data:
+            await data["engine"].async_stop()
     return unload_ok
