@@ -35,19 +35,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             hass.config_entries.async_update_entry(entry, options=options)
             data = {**entry.data, **options}
 
-    # Migrate rooms: backfill area_id from area_name for existing entries
+    # Migrate existing rooms: recover their area_id and discover occupancy
+    # sensors for rooms created before automatic presence discovery existed.
     rooms = data.get(CONF_ROOMS, [])
     migrated = False
     if rooms:
         from homeassistant.helpers import area_registry as ar
 
+        from .helpers import async_discover_occupancy_entity, slugify
+
         area_reg = ar.async_get(hass)
-        name_to_id = {a.name: a.id for a in area_reg.async_list_areas()}
+        areas = area_reg.async_list_areas()
+        id_to_area = {a.id: a for a in areas}
+        name_to_area = {a.name.casefold(): a for a in areas if a.name}
+        slug_to_area = {slugify(a.name): a for a in areas if a.name}
         for room in rooms:
-            if not room.get("area_id") and room.get("area_name"):
-                area_id = name_to_id.get(room["area_name"])
-                if area_id:
-                    room["area_id"] = area_id
+            area = id_to_area.get(room.get("area_id"))
+            if area is None and room.get("area_name"):
+                area = name_to_area.get(room["area_name"].casefold())
+            if area is None:
+                area = name_to_area.get(str(room.get("name", "")).casefold())
+            if area is None and room.get("id"):
+                area = slug_to_area.get(room["id"])
+            if area and not room.get("area_id"):
+                room["area_id"] = area.id
+                room.setdefault("area_name", area.name)
+                migrated = True
+            if area and not room.get("presence_entity"):
+                presence_entity = await async_discover_occupancy_entity(hass, area.id)
+                if presence_entity:
+                    room["presence_entity"] = presence_entity
                     migrated = True
         if migrated:
             options = dict(entry.options)

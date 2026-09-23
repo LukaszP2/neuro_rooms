@@ -49,6 +49,10 @@ class NeuroRoomsEngine:
                 area_id = controller.config.get("area_id")
                 discovered = await async_discover_occupancy_entity(self.hass, area_id)
                 controller.presence_entity = discovered
+                if discovered:
+                    # Expose the automatically selected entity in room_config so
+                    # downstream automations can resolve the room's HA area.
+                    controller.config["presence_entity"] = discovered
                 _LOGGER.debug(f"Room {room_id} discovered presence entity: {discovered}")
             else:
                 controller.presence_entity = controller.config.get("presence_entity")

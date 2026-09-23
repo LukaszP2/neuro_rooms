@@ -7,7 +7,11 @@ from copy import deepcopy
 from typing import Any
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import area_registry, entity_registry as er
+from homeassistant.helpers import (
+    area_registry,
+    device_registry as dr,
+    entity_registry as er,
+)
 from homeassistant.helpers.selector import SelectOptionDict
 
 from .const import DEFAULT_ROOM_MODES
@@ -77,6 +81,7 @@ async def async_discover_rooms_from_areas_for_entry(
                 "mode": infer_room_mode(area.name),
                 "modifier": None,
                 "source": "discovered",
+                "presence_entity": await async_discover_occupancy_entity(hass, area.id),
             }
         )
     return discovered
@@ -159,20 +164,27 @@ async def async_discover_occupancy_entity(hass: HomeAssistant, area_id: str) -> 
     if not area_id:
         return None
     registry = er.async_get(hass)
-    
+    devices = dr.async_get(hass)
+
+    def belongs_to_area(entry: Any) -> bool:
+        if entry.area_id == area_id:
+            return True
+        device = devices.async_get(entry.device_id) if entry.device_id else None
+        return device is not None and device.area_id == area_id
+
     # Pass 1: Strict match
     for entry in registry.entities.values():
-        if entry.area_id == area_id and entry.domain == "binary_sensor" and entry.original_device_class in ["occupancy", "presence"]:
+        if belongs_to_area(entry) and entry.domain == "binary_sensor" and entry.original_device_class in ["occupancy", "presence"]:
             return entry.entity_id
             
     # Pass 2: Fallback to Magic Areas explicitly named sensors
     for entry in registry.entities.values():
-        if entry.area_id == area_id and entry.entity_id.startswith("binary_sensor.magic_areas_presence_tracking_"):
+        if belongs_to_area(entry) and entry.entity_id.startswith("binary_sensor.magic_areas_presence_tracking_"):
             return entry.entity_id
             
     # Pass 3: Any binary_sensor in area containing presence/occupancy/motion
     for entry in registry.entities.values():
-        if entry.area_id == area_id and entry.domain == "binary_sensor":
+        if belongs_to_area(entry) and entry.domain == "binary_sensor":
             if any(x in entry.entity_id for x in ["presence", "occupancy", "motion"]):
                 return entry.entity_id
                 
