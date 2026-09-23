@@ -61,9 +61,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 room["area_id"] = area.id
                 room.setdefault("area_name", area.name)
                 migrated = True
-            if area and not room.get("presence_entity"):
+            current_presence = room.get("presence_entity")
+            current_is_magic = bool(
+                current_presence
+                and current_presence.startswith(
+                    "binary_sensor.magic_areas_presence_tracking_"
+                )
+            )
+            should_refresh_presence = not current_presence or (
+                room.get("source") == "discovered" and not current_is_magic
+            )
+            if area and should_refresh_presence:
                 presence_entity = await async_discover_occupancy_entity(hass, area.id)
-                if presence_entity:
+                if presence_entity and presence_entity != current_presence:
                     room["presence_entity"] = presence_entity
                     migrated = True
         if migrated:
