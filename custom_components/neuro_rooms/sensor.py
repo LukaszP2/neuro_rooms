@@ -51,6 +51,7 @@ class NeuroRoomSensor(SensorEntity):
             suggested_area=area_id,
             manufacturer="Neuro Rooms",
             model="Virtual Room Controller",
+            via_device=(DOMAIN, self._entry.entry_id),
         )
 
     @property

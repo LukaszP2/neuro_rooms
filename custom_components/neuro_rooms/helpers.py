@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import Any
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import area_registry
+from homeassistant.helpers import area_registry, entity_registry as er
 from homeassistant.helpers.selector import SelectOptionDict
 
 from .const import DEFAULT_ROOM_MODES
@@ -124,3 +124,40 @@ def available_area_select_options(hass: HomeAssistant) -> list[SelectOptionDict]
 
 def normalize_modifier(value: str | None) -> str | None:
     return None if value in (None, "", NO_MODIFIER_VALUE) else value
+
+
+async def async_discover_global_mode_entity(hass: HomeAssistant) -> str | None:
+    """Find Neuro Modes main select entity."""
+    registry = er.async_get(hass)
+    for entry in registry.entities.values():
+        if entry.platform == "neuro_modes" and entry.domain == "select":
+            return entry.entity_id
+        # Fallback heuristic if platform differs but ID matches closely
+        if entry.domain == "select" and "neuro_modes" in entry.entity_id:
+            return entry.entity_id
+    return None
+
+
+async def async_discover_occupancy_entity(hass: HomeAssistant, area_id: str) -> str | None:
+    """Find primary occupancy entity for an area."""
+    if not area_id:
+        return None
+    registry = er.async_get(hass)
+    
+    # Pass 1: Strict match
+    for entry in registry.entities.values():
+        if entry.area_id == area_id and entry.domain == "binary_sensor" and entry.original_device_class in ["occupancy", "presence"]:
+            return entry.entity_id
+            
+    # Pass 2: Fallback to Magic Areas explicitly named sensors
+    for entry in registry.entities.values():
+        if entry.area_id == area_id and entry.entity_id.startswith("binary_sensor.magic_areas_presence_tracking_"):
+            return entry.entity_id
+            
+    # Pass 3: Any binary_sensor in area containing presence/occupancy/motion
+    for entry in registry.entities.values():
+        if entry.area_id == area_id and entry.domain == "binary_sensor":
+            if any(x in entry.entity_id for x in ["presence", "occupancy", "motion"]):
+                return entry.entity_id
+                
+    return None
