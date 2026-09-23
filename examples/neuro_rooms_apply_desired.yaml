@@ -1,45 +1,196 @@
 alias: Neuro Rooms — zastosuj pożądane
-description: "Przykładowa, jedna automatyzacja reagująca na wynik desired z Neuro Rooms."
+description: >-
+  Automatycznie wykrywa pokoje i urządzenia w ich obszarach HA. Stosuje
+  światło, obsługiwany preset HVAC oraz włączanie i wyłączanie odtwarzaczy.
 mode: queued
-max: 20
+max: 50
+
 triggers:
-  - trigger: state
-    entity_id:
-      - sensor.neuro_room_biuro_state
-      - sensor.neuro_room_salon_state
-  - trigger: state
-    entity_id: select.neuro_modes_home_mode
+  - trigger: event
+    event_type: neuro_rooms_desired_changed
+    id: zmiana_pokoju
+  - trigger: homeassistant
+    event: start
+    id: start_ha
+
 actions:
   - variables:
-      pokoje:
-        - sensor.neuro_room_biuro_state
-        - sensor.neuro_room_salon_state
-      cele:
-        biuro:
-          area_id: biuro
-          light_entities: [light.biuro]
-        salon:
-          area_id: salon
-          light_entities: [light.salon]
+      sensory_pokoi: >-
+        {% if trigger.id == 'start_ha' %}
+          {{ states.sensor
+             | selectattr('attributes.room_id', 'defined')
+             | selectattr('attributes.desired', 'defined')
+             | selectattr('attributes.room_config', 'defined')
+             | map(attribute='entity_id') | list }}
+        {% else %}
+          {{ [trigger.event.data.entity_id]
+             if trigger.event.data.entity_id else [] }}
+        {% endif %}
+
   - repeat:
-      for_each: "{{ pokoje }}"
+      for_each: "{{ sensory_pokoi }}"
       sequence:
         - variables:
-            pokoj_id: "{{ state_attr(repeat.item, 'room_id') }}"
-            wanted: "{{ state_attr(repeat.item, 'desired') or {} }}"
-            cel: "{{ cele.get(pokoj_id, {}) }}"
+            wanted: >-
+              {% if trigger.id == 'start_ha' %}
+                {{ state_attr(repeat.item, 'desired') or {} }}
+              {% else %}
+                {{ trigger.event.data.desired or {} }}
+              {% endif %}
+            konfiguracja: >-
+              {% if trigger.id == 'start_ha' %}
+                {{ state_attr(repeat.item, 'room_config') or {} }}
+              {% else %}
+                {{ trigger.event.data.room_config or {} }}
+              {% endif %}
+            temperatury_hvac: "{{ {'comfort': 20, 'eco': 18, 'sleep': 18} }}"
+            sensor_pokoju: >-
+              {% if trigger.id == 'start_ha' %}
+                {{ repeat.item }}
+              {% else %}
+                {{ trigger.event.data.entity_id }}
+              {% endif %}
+            obszar: >-
+              {% set czujnik = konfiguracja.get('presence_entity') %}
+              {{ konfiguracja.get('area_id')
+                 or (area_id(czujnik) if czujnik else none)
+                 or area_id(sensor_pokoju) }}
+
+        - variables:
+            swiatla: >-
+              {% set ns = namespace(ids=[]) %}
+              {% if obszar %}
+                {% for encja in area_entities(obszar) %}
+                  {% if encja.startswith('light.') %}
+                    {% set ns.ids = ns.ids + [encja] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {{ ns.ids }}
+            klimaty_z_presetem: >-
+              {% set ns = namespace(ids=[]) %}
+              {% if obszar and wanted.get('hvac') not in [none, 'off'] %}
+                {% for encja in area_entities(obszar) %}
+                  {% set presety = state_attr(encja, 'preset_modes') or [] %}
+                  {% if encja.startswith('climate.')
+                        and wanted.get('hvac') in presety %}
+                    {% set ns.ids = ns.ids + [encja] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {{ ns.ids }}
+            klimaty_z_trybem_off: >-
+              {% set ns = namespace(ids=[]) %}
+              {% if obszar and wanted.get('hvac') == 'off' %}
+                {% for encja in area_entities(obszar) %}
+                  {% set tryby = state_attr(encja, 'hvac_modes') or [] %}
+                  {% if encja.startswith('climate.') and 'off' in tryby %}
+                    {% set ns.ids = ns.ids + [encja] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {{ ns.ids }}
+            klimaty_bez_presetu: >-
+              {% set ns = namespace(ids=[]) %}
+              {% if obszar and wanted.get('hvac') in temperatury_hvac %}
+                {% for encja in area_entities(obszar) %}
+                  {% set tryby = state_attr(encja, 'hvac_modes') or [] %}
+                  {% set presety = state_attr(encja, 'preset_modes') or [] %}
+                  {% if encja.startswith('climate.')
+                        and 'heat' in tryby
+                        and wanted.get('hvac') not in presety %}
+                    {% set ns.ids = ns.ids + [encja] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {{ ns.ids }}
+            odtwarzacze: >-
+              {% set ns = namespace(ids=[]) %}
+              {% if obszar %}
+                {% for encja in area_entities(obszar) %}
+                  {% if encja.startswith('media_player.') %}
+                    {% set ns.ids = ns.ids + [encja] %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {{ ns.ids }}
+
         - choose:
-            - conditions: "{{ wanted.get('lighting') == 'off' and cel.get('light_entities') }}"
+            - conditions:
+                - condition: template
+                  value_template: >-
+                    {{ wanted.get('lighting') == 'off'
+                       and (swiatla | count > 0) }}
               sequence:
                 - action: light.turn_off
                   target:
-                    entity_id: "{{ cel.get('light_entities') }}"
-            - conditions: "{{ wanted.get('lighting') in ['work', 'normal', 'on'] and cel.get('light_entities') }}"
+                    entity_id: "{{ swiatla }}"
+            - conditions:
+                - condition: template
+                  value_template: >-
+                    {{ wanted.get('lighting') in ['work', 'normal', 'on']
+                       and (swiatla | count > 0) }}
               sequence:
                 - action: light.turn_on
                   target:
-                    entity_id: "{{ cel.get('light_entities') }}"
+                    entity_id: "{{ swiatla }}"
                   data:
-                    brightness_pct: "{{ 100 if wanted.get('lighting') == 'work' else 70 }}"
-        # Celowo testowa obsługa tylko światła. hvac/media pozostają w desired
-        # i można je podłączyć po sprawdzeniu rzeczywistych encji w pokojach.
+                    brightness_pct: >-
+                      {{ 100 if wanted.get('lighting') == 'work' else 70 }}
+
+        - if:
+            - condition: template
+              value_template: >-
+                {{ wanted.get('hvac') == 'off'
+                   and (klimaty_z_trybem_off | count > 0) }}
+          then:
+            - action: climate.set_hvac_mode
+              target:
+                entity_id: "{{ klimaty_z_trybem_off }}"
+              data:
+                hvac_mode: "off"
+
+        - if:
+            - condition: template
+              value_template: "{{ klimaty_z_presetem | count > 0 }}"
+          then:
+            - action: climate.set_preset_mode
+              target:
+                entity_id: "{{ klimaty_z_presetem }}"
+              data:
+                preset_mode: "{{ wanted.get('hvac') }}"
+
+        - if:
+            - condition: template
+              value_template: "{{ klimaty_bez_presetu | count > 0 }}"
+          then:
+            - action: climate.set_hvac_mode
+              target:
+                entity_id: "{{ klimaty_bez_presetu }}"
+              data:
+                hvac_mode: heat
+            - action: climate.set_temperature
+              target:
+                entity_id: "{{ klimaty_bez_presetu }}"
+              data:
+                temperature: "{{ temperatury_hvac.get(wanted.get('hvac')) }}"
+
+        - if:
+            - condition: template
+              value_template: >-
+                {{ wanted.get('media') == 'off'
+                   and (odtwarzacze | count > 0) }}
+          then:
+            - action: media_player.turn_off
+              target:
+                entity_id: "{{ odtwarzacze }}"
+
+        - if:
+            - condition: template
+              value_template: >-
+                {{ wanted.get('media') == 'on'
+                   and (odtwarzacze | count > 0) }}
+          then:
+            - action: media_player.turn_on
+              target:
+                entity_id: "{{ odtwarzacze }}"

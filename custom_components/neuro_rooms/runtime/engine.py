@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Event, EventStateChangedData
@@ -115,3 +116,26 @@ class NeuroRoomsEngine:
         for unsub in self._unsubs:
             unsub()
         self._unsubs.clear()
+
+    async def async_update_room_config(
+        self, room_id: str, changes: dict[str, object]
+    ) -> None:
+        """Save room settings and immediately recalculate its desired profile."""
+        controller = self.rooms.get(room_id)
+        if controller is None:
+            return
+
+        controller.config.update(changes)
+        controller.update_context(
+            controller.global_context_mode,
+            controller.global_modifiers,
+        )
+
+        rooms = [deepcopy(item.config) for item in self.rooms.values()]
+        self.config_data[CONF_ROOMS] = rooms
+        options = dict(self.config_entry.options)
+        options[CONF_ROOMS] = rooms
+        self.hass.config_entries.async_update_entry(
+            self.config_entry,
+            options=options,
+        )

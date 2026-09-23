@@ -19,12 +19,24 @@ Dopasowanie wybiera regułę o największej liczbie warunków; przy remisie wygr
 pierwsza na liście. Domyślne profile są przykładowe i można je zastąpić.
 `desired` opisuje wynik, ale integracja nie wykonuje na jego podstawie działań.
 
-Przykładowa jedna automatyzacja HA znajduje się w
-`examples/neuro_rooms_apply_desired.yaml`. Zawiera jawne, testowe mapowanie
-pokoi na encje światła. W tej wersji obsługuje jedynie `lighting`; HVAC i media
-pozostają danymi wyjściowymi do późniejszego podłączenia.
+Przykładowa generyczna automatyzacja HA znajduje się w
+`examples/neuro_rooms_apply_desired.yaml`. Nie zawiera ręcznej listy pokoi ani
+urządzeń: wykrywa sensor Neuro Rooms, obszar HA pokoju i przypisane do niego
+encje. Obsługuje oświetlenie, HVAC przez wspierane presety lub tryby grzania,
+oraz wyłączenie/włączenie odtwarzaczy. Dla termostatów bez presetów przykładowa
+automatyzacja mapuje `comfort` na 20°C, a `eco` i `sleep` na 18°C; te wartości są
+testowe i można je zmienić w automatyzacji. `hvac: off` jest stosowane tylko
+przy obsługiwanym trybie `off`.
 
 Neuro Modes w aktualnym kodzie wystawia globalny wybór jako encję `select`.
 Dlatego kontekst globalny zawiera jej bieżący stan. Nie ma osobnego, gotowego
 strumienia aktywnych modyfikatorów globalnych, więc `global_modifiers` jest na
 razie puste. Zmiana trybu globalnego powoduje ponowne wyliczenie wyniku.
+
+## Urządzenia i konfiguracja pomieszczeń
+
+Urządzenie silnika jest nadrzędne wobec urządzeń poszczególnych pomieszczeń.
+Na stronie urządzenia pokoju dostępne są konfiguracyjne encje wyboru trybu i
+modyfikatora; zmiana zapisuje się w konfiguracji i od razu przelicza profil.
+Menu silnika służy do ustawień wspólnych oraz dodawania, wykrywania i usuwania
+pokoi.

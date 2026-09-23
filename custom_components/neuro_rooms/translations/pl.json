@@ -18,17 +18,17 @@
         "title": "Neuro Rooms",
         "description": "Konfiguracja z menu",
         "menu_options": {
-          "engine": "Engine",
-          "rooms": "Rooms",
-          "modes": "Modes",
-          "modifiers": "Modifiers"
+          "engine": "Silnik",
+          "rooms": "Pokoje",
+          "modes": "Tryby",
+          "modifiers": "Modyfikatory"
         }
       },
       "engine": {
-        "title": "Engine",
+        "title": "Silnik",
         "data": {
-          "engine_name": "Engine name",
-          "auto_discovery": "Enable auto discovery"
+          "engine_name": "Nazwa silnika",
+          "auto_discovery": "Automatycznie wykrywaj pokoje"
         }
       },
       "engine_autodiscovery_confirm": {
@@ -39,27 +39,26 @@
         }
       },
       "rooms": {
-        "title": "Rooms",
+        "title": "Pokoje",
         "menu_options": {
-          "rooms_add": "Add room",
-          "rooms_discover": "Auto-discover rooms",
-          "rooms_edit": "Edit room",
-          "rooms_remove": "Remove room",
-          "init": "Back"
+          "rooms_add": "Dodaj pokój",
+          "rooms_discover": "Wykryj pokoje",
+          "rooms_remove": "Usuń pokój",
+          "init": "Wróć"
         }
       },
       "rooms_add": {
-        "title": "Add room",
+        "title": "Dodaj pokój",
         "data": {
-          "name": "Room / area",
-          "mode": "Mode",
-          "modifier": "Modifier"
+          "name": "Obszar Home Assistant",
+          "mode": "Tryb pokoju",
+          "modifier": "Modyfikator pokoju"
         }
       },
       "rooms_discover": {
-        "title": "Auto-discover rooms",
+        "title": "Wykryj pokoje",
         "data": {
-          "run_discovery": "Run discovery now"
+          "run_discovery": "Uruchom wykrywanie"
         }
       },
       "rooms_discover_confirm": {
@@ -69,41 +68,26 @@
           "confirm": "I understand and want to continue"
         }
       },
-      "rooms_edit": {
-        "title": "Edit room",
-        "data": {
-          "id": "Room"
-        }
-      },
-      "rooms_edit_form": {
-        "title": "Edit room",
-        "data": {
-          "name": "Room / area",
-          "mode": "Mode",
-          "modifier": "Modifier",
-          "presence_entity": "Czujnik obecności (opcjonalnie)"
-        }
-      },
       "rooms_remove": {
-        "title": "Remove room",
+        "title": "Usuń pokój",
         "data": {
-          "id": "Room"
+          "id": "Pokój"
         }
       },
       "rooms_remove_confirm": {
-        "title": "Confirm room removal",
+        "title": "Potwierdź usunięcie pokoju",
         "description": "Na pewno chcesz usunąć ten pokój?",
         "data": {
-          "confirm": "Yes, remove it"
+          "confirm": "Tak, usuń pokój"
         }
       },
       "modes": {
-        "title": "Modes",
+        "title": "Tryby",
         "menu_options": {
-          "modes_add": "Add mode",
-          "modes_edit": "Edit mode",
-          "modes_remove": "Remove mode",
-          "init": "Back"
+          "modes_add": "Dodaj tryb",
+          "modes_edit": "Edytuj tryb",
+          "modes_remove": "Usuń tryb",
+          "init": "Wróć"
         }
       },
       "modes_add": {
@@ -144,12 +128,12 @@
         }
       },
       "modifiers": {
-        "title": "Modifiers",
+        "title": "Modyfikatory",
         "menu_options": {
-          "modifiers_add": "Add modifier",
-          "modifiers_edit": "Edit modifier",
-          "modifiers_remove": "Remove modifier",
-          "init": "Back"
+          "modifiers_add": "Dodaj modyfikator",
+          "modifiers_edit": "Edytuj modyfikator",
+          "modifiers_remove": "Usuń modyfikator",
+          "init": "Wróć"
         }
       },
       "modifiers_add": {
@@ -186,6 +170,26 @@
         "data": {
           "confirm": "Yes, remove it"
         }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "state": {
+        "name": "Stan"
+      }
+    },
+    "switch": {
+      "active": {
+        "name": "Aktywny"
+      }
+    },
+    "select": {
+      "room_mode": {
+        "name": "Tryb pomieszczenia"
+      },
+      "room_modifier": {
+        "name": "Modyfikator pomieszczenia"
       }
     }
   }
