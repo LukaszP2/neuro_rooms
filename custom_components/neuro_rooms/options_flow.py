@@ -30,6 +30,7 @@ from .const import (
     CONF_MODIFIER_NAME,
     CONF_MODIFIER_OVERRIDES_JSON,
     CONF_MODIFIERS,
+    CONF_PROFILES,
     CONF_ROOM_ACTION,
     CONF_ROOM_ADVANCED_JSON,
     CONF_ROOM_AREA_ID,
@@ -56,6 +57,7 @@ from .const import (
 )
 from .modes import DEFAULT_MODES, normalize_mode_names
 from .modifiers import DEFAULT_MODIFIERS, normalize_modifier_names
+from .profiles import DEFAULT_PROFILES
 from .rooms import (
     build_advanced_room_payload,
     build_basic_room_payload,
@@ -74,6 +76,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
         self._rooms: list[dict[str, Any]] = []
         self._modes: list[dict[str, Any]] = []
         self._modifiers: list[dict[str, Any]] = []
+        self._profiles: list[dict[str, Any]] = []
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None):
         if not self._data:
@@ -82,6 +85,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
             self._rooms = list(self._options.get(CONF_ROOMS, []))
             self._modes = list(self._options.get(CONF_MODES, DEFAULT_MODES))
             self._modifiers = list(self._options.get(CONF_MODIFIERS, DEFAULT_MODIFIERS))
+            self._profiles = list(self._options.get(CONF_PROFILES, DEFAULT_PROFILES))
 
         if user_input is not None:
             self._options[CONF_AUTO_DISCOVERY] = user_input[CONF_AUTO_DISCOVERY]
@@ -124,19 +128,48 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
                 return await self.async_step_modes_menu()
             if action == "modifiers":
                 return await self.async_step_modifiers_menu()
+            if action == "profiles":
+                return await self.async_step_profiles_json()
             return await self.async_step_done()
 
         schema = vol.Schema(
             {
                 vol.Required("action", default="rooms"): selector.SelectSelector(
                     selector.SelectSelectorConfig(
-                        options=["rooms", "modes", "modifiers", "done"],
+                        options=["rooms", "modes", "modifiers", "profiles", "done"],
                         mode=selector.SelectSelectorMode.DROPDOWN,
                     )
                 ),
             }
         )
         return self.async_show_form(step_id="menu", data_schema=schema)
+
+    async def async_step_profiles_json(self, user_input: dict[str, Any] | None = None):
+        """Edit the profile rules as JSON for this initial release."""
+        if user_input is not None:
+            try:
+                parsed = parse_json_payload(user_input["profiles_json"])
+                if not isinstance(parsed, list) or any(not isinstance(item, dict) for item in parsed):
+                    raise ValueError("profiles must be a list of objects")
+                self._profiles = parsed
+                self._options[CONF_PROFILES] = parsed
+                return await self.async_step_menu()
+            except (ValueError, json.JSONDecodeError):
+                return self.async_show_form(
+                    step_id="profiles_json",
+                    data_schema=self._profiles_schema(user_input.get("profiles_json", "")),
+                    errors={"profiles_json": "invalid_json"},
+                )
+        return self.async_show_form(
+            step_id="profiles_json",
+            data_schema=self._profiles_schema(json.dumps(self._profiles, ensure_ascii=False, indent=2)),
+        )
+
+    @staticmethod
+    def _profiles_schema(default: str = ""):
+        return vol.Schema({vol.Required("profiles_json", default=default): selector.TextSelector(
+            selector.TextSelectorConfig(multiline=True)
+        )})
 
     async def async_step_rooms_menu(self, user_input: dict[str, Any] | None = None):
         if user_input is not None:

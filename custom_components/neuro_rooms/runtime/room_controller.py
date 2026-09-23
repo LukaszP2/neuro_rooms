@@ -18,21 +18,46 @@ class RoomState(str, Enum):
 class RoomController:
     """Room controller."""
 
-    def __init__(self, hass, room_id: str, config: dict[str, Any]) -> None:
+    def __init__(self, hass, room_id: str, config: dict[str, Any], profiles: list[dict[str, Any]] | None = None) -> None:
         self.hass = hass
         self.room_id = room_id
         self.config = config
+        self.profiles = profiles or []
         
         self.state = RoomState.IDLE
         self.is_occupied = False
         
         self.global_mode = "normal"
         self.global_modifiers: list[str] = []
+        self.global_context_mode = "unknown"
         
         self.local_mode_override: str | None = None
         self.local_modifiers: list[str] = []
         
         self._entity = None
+        self.selected_profile: str | None = None
+        self.desired: dict[str, Any] = {}
+        self.context: dict[str, Any] = {}
+
+    def update_context(self, global_mode: str, global_modifiers: list[str] | None = None) -> None:
+        """Rebuild room context and resolve its desired behavior."""
+        from ..helpers import select_profile
+
+        self.global_context_mode = global_mode
+        self.global_modifiers = global_modifiers or []
+        self.context = {
+            "global_mode": self.global_context_mode,
+            "global_modifiers": list(self.global_modifiers),
+            "mode": self.config.get("mode", self.config.get("room_mode")),
+            "modifier": self.config.get("modifier", self.config.get("room_modifier")),
+            "state": self.state.value,
+        }
+        if self.context["modifier"] in ("", "none", "__none__"):
+            self.context["modifier"] = None
+        profile = select_profile(self.context, self.profiles)
+        self.selected_profile = profile.get("id") or profile.get("name") if profile else None
+        self.desired = dict(profile.get("desired", {})) if profile else {}
+        self._update_ha_state()
 
     def set_entity(self, entity):
         """Link HA entity to controller."""
@@ -57,7 +82,7 @@ class RoomController:
         else:
             self.state = RoomState.IDLE
             
-        self._update_ha_state()
+        self.update_context(self.global_context_mode, self.global_modifiers)
 
     async def handle_event(self, event_type: str, payload=None):
         """Handle important room events only."""
@@ -69,6 +94,8 @@ class RoomController:
 
         elif event_type == "global_mode_changed":
             self.global_mode = payload.get("mode", "normal")
+            self.global_context_mode = payload.get("context_mode", self.global_context_mode)
+            self.global_modifiers = payload.get("modifiers", self.global_modifiers)
             self._evaluate_state()
             
         elif event_type == "local_mode_changed":

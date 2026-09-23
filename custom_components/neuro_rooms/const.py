@@ -24,6 +24,7 @@ CONF_SOURCE = "source"
 CONF_ROOMS = "rooms"
 CONF_MODES = "modes"
 CONF_MODIFIERS = "modifiers"
+CONF_PROFILES = "profiles"
 
 # ---------------------------------------------------------------------------
 # Room config keys  (used by rooms.py, options_flow.py, config_flow.py)

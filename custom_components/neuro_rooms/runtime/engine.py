@@ -11,6 +11,7 @@ from homeassistant.helpers.event import async_track_state_change_event
 from ..const import CONF_ROOMS
 from .room_controller import RoomController
 from ..helpers import async_discover_global_mode_entity, async_discover_occupancy_entity
+from ..profiles import get_profiles
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,10 +28,12 @@ class NeuroRoomsEngine:
         self.global_mode_entity = config_data.get("global_mode_entity")
         
         rooms_list = self.config_data.get(CONF_ROOMS, [])
+        profiles = get_profiles(self.config_data)
         for room_cfg in rooms_list:
             room_id = room_cfg.get("id")
             if room_id:
-                self.rooms[room_id] = RoomController(hass, room_id, room_cfg)
+                controller = RoomController(hass, room_id, room_cfg, profiles)
+                self.rooms[room_id] = controller
 
     async def async_start(self):
         """Start listening to HA events for occupancy and modes."""
@@ -69,7 +72,10 @@ class NeuroRoomsEngine:
                     mapped_mode = "away"
                 
                 for room_controller in self.rooms.values():
-                    await room_controller.handle_event("global_mode_changed", {"mode": mapped_mode})
+                    await room_controller.handle_event("global_mode_changed", {
+                        "mode": mapped_mode,
+                        "context_mode": str(new_state.state),
+                    })
                     
             # Check if this is a Presence entity for any room
             for room_id, room_controller in self.rooms.items():
@@ -80,6 +86,25 @@ class NeuroRoomsEngine:
         self._unsubs.append(
             self.hass.bus.async_listen("state_changed", _state_changed_listener)
         )
+
+        # Seed context from the current Neuro Modes select value.
+        current = self.hass.states.get(self.global_mode_entity) if self.global_mode_entity else None
+        global_mode = str(current.state) if current else "unknown"
+        for controller in self.rooms.values():
+            value = global_mode.lower()
+            mapped_mode = "night" if "noc" in value or "night" in value else (
+                "away" if "poza" in value or "away" in value else "normal"
+            )
+            await controller.handle_event("global_mode_changed", {
+                "mode": mapped_mode,
+                "context_mode": global_mode,
+            })
+            if controller.presence_entity:
+                presence = self.hass.states.get(controller.presence_entity)
+                if presence:
+                    await controller.handle_event(
+                        "occupancy_changed", {"occupied": presence.state == "on"}
+                    )
 
     async def async_stop(self):
         """Stop listening to events."""

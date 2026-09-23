@@ -66,5 +66,8 @@ class NeuroRoomSensor(SensorEntity):
         return {
             "room_id": self._controller.room_id,
             "room_config": self._controller.config,
+            "context": self._controller.context,
+            "selected_profile": self._controller.selected_profile,
+            "desired": self._controller.desired,
         }
 
