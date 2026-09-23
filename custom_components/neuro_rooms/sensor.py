@@ -30,7 +30,7 @@ class NeuroRoomSensor(SensorEntity):
     """Representation of a Neuro Room state sensor."""
 
     _attr_has_entity_name = True
-    _attr_name = "State"
+    _attr_translation_key = "state"
 
     def __init__(self, controller: RoomController, entry: ConfigEntry) -> None:
         """Initialize the sensor."""

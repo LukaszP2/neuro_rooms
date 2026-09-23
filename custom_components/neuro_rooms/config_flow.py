@@ -15,8 +15,6 @@ from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
-    EntitySelector,
-    EntitySelectorConfig,
     TextSelector,
     TextSelectorConfig,
 )
@@ -36,7 +34,6 @@ from .const import (
     CONF_MODIFIER_NAME,
     CONF_MODIFIER_PRIORITY,
     CONF_MODIFIERS,
-    CONF_ROOM_PRESENCE_ENTITY,
     CONF_NAME,
     CONF_ROOMS,
     CONF_SOURCE,
@@ -189,7 +186,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
         w = self._working()
         menu = ["rooms_add", "rooms_discover"]
         if w[CONF_ROOMS]:
-            menu += ["rooms_edit", "rooms_remove"]
+            menu += ["rooms_remove"]
         menu += ["init"]
         return self.async_show_menu(step_id="rooms", menu_options=menu)
 
@@ -213,7 +210,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
             return self.async_show_menu(
                 step_id="rooms",
                 menu_options=["rooms_add", "rooms_discover"]
-                + (["rooms_edit", "rooms_remove"] if w[CONF_ROOMS] else [])
+                + (["rooms_remove"] if w[CONF_ROOMS] else [])
                 + ["init"],
             )
 
@@ -264,105 +261,6 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
 
         return self.async_show_form(step_id="rooms_add", data_schema=schema)
 
-    async def async_step_rooms_edit(self, user_input: dict[str, Any] | None = None):
-        w = self._working()
-        options = available_room_select_options(w)
-
-        if not options:
-            return self.async_show_menu(
-                step_id="rooms", menu_options=["rooms_add", "rooms_discover", "init"]
-            )
-
-        if user_input is not None and CONF_ID in user_input:
-            selected = user_input[CONF_ID]
-            self._edit_room = next(
-                (r for r in w[CONF_ROOMS] if r.get(CONF_ID) == selected), None
-            )
-            if self._edit_room is not None:
-                return await self.async_step_rooms_edit_form()
-
-        if len(options) == 1:
-            self._edit_room = next(
-                r for r in w[CONF_ROOMS] if r.get(CONF_ID) == options[0]["value"]
-            )
-            return await self.async_step_rooms_edit_form()
-
-        return self.async_show_form(
-            step_id="rooms_edit",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_ID, default=options[0]["value"]): SelectSelector(
-                        SelectSelectorConfig(
-                            options=options, mode=SelectSelectorMode.LIST
-                        )
-                    )
-                }
-            ),
-        )
-
-    async def async_step_rooms_edit_form(
-        self, user_input: dict[str, Any] | None = None
-    ):
-        w = self._working()
-        room = getattr(self, "_edit_room", None)
-        if room is None:
-            return self.async_show_menu(
-                step_id="rooms",
-                menu_options=["rooms_add", "rooms_discover"]
-                + (["rooms_edit", "rooms_remove"] if w[CONF_ROOMS] else [])
-                + ["init"],
-            )
-
-        mode_opts = available_mode_select_options(w)
-        mod_opts = available_modifier_select_options(w)
-
-        if user_input is not None:
-            updated = {
-                **room,
-                CONF_ID: room[CONF_ID],
-                CONF_NAME: room[CONF_NAME],
-                CONF_SOURCE: room.get(CONF_SOURCE, "manual"),
-                CONF_MODE: user_input[CONF_MODE],
-                CONF_MODIFIER: normalize_modifier(user_input.get(CONF_MODIFIER)),
-            }
-            presence_entity = user_input.get(CONF_ROOM_PRESENCE_ENTITY)
-            if presence_entity:
-                updated[CONF_ROOM_PRESENCE_ENTITY] = presence_entity
-            else:
-                updated.pop(CONF_ROOM_PRESENCE_ENTITY, None)
-            w[CONF_ROOMS] = replace_by_id(w[CONF_ROOMS], updated)
-            await self._persist()
-            return self.async_show_menu(
-                step_id="rooms",
-                menu_options=["rooms_add", "rooms_discover"]
-                + (["rooms_edit", "rooms_remove"] if w[CONF_ROOMS] else [])
-                + ["init"],
-            )
-
-        schema = vol.Schema(
-            {
-                vol.Required(
-                    CONF_MODE,
-                    default=room.get(CONF_MODE, mode_opts[0]["value"]),
-                ): SelectSelector(
-                    SelectSelectorConfig(
-                        options=mode_opts, mode=SelectSelectorMode.LIST
-                    )
-                ),
-                vol.Required(
-                    CONF_MODIFIER,
-                    default=room.get(CONF_MODIFIER) or NO_MODIFIER_VALUE,
-                ): SelectSelector(
-                    SelectSelectorConfig(options=mod_opts, mode=SelectSelectorMode.LIST)
-                ),
-                vol.Optional(
-                    CONF_ROOM_PRESENCE_ENTITY,
-                    default=room.get(CONF_ROOM_PRESENCE_ENTITY),
-                ): EntitySelector(EntitySelectorConfig(domain="binary_sensor")),
-            }
-        )
-        return self.async_show_form(step_id="rooms_edit_form", data_schema=schema)
-
     async def async_step_rooms_discover(self, user_input: dict[str, Any] | None = None):
         w = self._working()
         if user_input is not None:
@@ -380,7 +278,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
             return self.async_show_menu(
                 step_id="rooms",
                 menu_options=["rooms_add", "rooms_discover"]
-                + (["rooms_edit", "rooms_remove"] if w[CONF_ROOMS] else [])
+                + (["rooms_remove"] if w[CONF_ROOMS] else [])
                 + ["init"],
             )
 
@@ -409,7 +307,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
             return self.async_show_menu(
                 step_id="rooms",
                 menu_options=["rooms_add", "rooms_discover"]
-                + (["rooms_edit", "rooms_remove"] if w[CONF_ROOMS] else [])
+                + (["rooms_remove"] if w[CONF_ROOMS] else [])
                 + ["init"],
             )
 
@@ -458,7 +356,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
             return self.async_show_menu(
                 step_id="rooms",
                 menu_options=["rooms_add", "rooms_discover"]
-                + (["rooms_edit", "rooms_remove"] if w[CONF_ROOMS] else [])
+                + (["rooms_remove"] if w[CONF_ROOMS] else [])
                 + ["init"],
             )
 
@@ -469,7 +367,7 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
             return self.async_show_menu(
                 step_id="rooms",
                 menu_options=["rooms_add", "rooms_discover"]
-                + (["rooms_edit", "rooms_remove"] if w[CONF_ROOMS] else [])
+                + (["rooms_remove"] if w[CONF_ROOMS] else [])
                 + ["init"],
             )
 

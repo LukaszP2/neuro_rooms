@@ -15,7 +15,7 @@ class NeuroRoomsMasterSwitch(SwitchEntity):
     """Master switch to enable or disable Neuro Rooms automation."""
 
     _attr_has_entity_name = True
-    _attr_name = "Active"
+    _attr_translation_key = "active"
     _attr_icon = "mdi:brain"
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
@@ -51,7 +51,7 @@ class NeuroRoomsMasterSwitch(SwitchEntity):
         """Return device registry information for this entity."""
         return DeviceInfo(
             identifiers={(DOMAIN, self.entry.entry_id)},
-            name="Neuro Rooms Controller",
+            name=self.entry.title,
             manufacturer="Neuro Home",
             model="Rooms Logic Engine",
         )

@@ -42,8 +42,7 @@
         "title": "Rooms",
         "menu_options": {
           "rooms_add": "Add room",
-          "rooms_discover": "Auto-discover rooms",
-          "rooms_edit": "Edit room",
+          "rooms_discover": "Discover rooms",
           "rooms_remove": "Remove room",
           "init": "Back"
         }
@@ -67,21 +66,6 @@
         "description": "Running discovery may add or replace room setup values.",
         "data": {
           "confirm": "I understand and want to continue"
-        }
-      },
-      "rooms_edit": {
-        "title": "Edit room",
-        "data": {
-          "id": "Room"
-        }
-      },
-      "rooms_edit_form": {
-        "title": "Edit room",
-        "data": {
-          "name": "Room / area",
-          "mode": "Mode",
-          "modifier": "Modifier",
-          "presence_entity": "Presence sensor (optional)"
         }
       },
       "rooms_remove": {
@@ -186,6 +170,26 @@
         "data": {
           "confirm": "Yes, remove it"
         }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "state": {
+        "name": "State"
+      }
+    },
+    "switch": {
+      "active": {
+        "name": "Active"
+      }
+    },
+    "select": {
+      "room_mode": {
+        "name": "Room mode"
+      },
+      "room_modifier": {
+        "name": "Room modifier"
       }
     }
   }

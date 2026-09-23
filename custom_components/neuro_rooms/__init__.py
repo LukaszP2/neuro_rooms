@@ -12,7 +12,7 @@ from .const import CONF_AUTO_DISCOVERY, CONF_ROOMS, DOMAIN
 from .helpers import async_discover_rooms_from_areas_for_entry
 from .runtime.engine import NeuroRoomsEngine
 
-PLATFORMS: list[str] = ["sensor", "switch"]
+PLATFORMS: list[str] = ["sensor", "switch", "select"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
