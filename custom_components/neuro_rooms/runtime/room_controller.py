@@ -21,6 +21,8 @@ class RoomController:
         self.room_id = room_id
         self.config = config
         self.state = RoomState.IDLE
+        self.is_occupied = False
+        self.global_mode = "normal"
         self._entity = None
 
     def set_entity(self, entity):
@@ -32,23 +34,27 @@ class RoomController:
         if self._entity:
             self._entity.async_write_ha_state()
 
+    def _evaluate_state(self):
+        """Evaluate and set the correct state based on flags."""
+        if self.global_mode == "night":
+            self.state = RoomState.NIGHT
+        elif self.global_mode == "away":
+            self.state = RoomState.AWAY
+        elif self.is_occupied:
+            self.state = RoomState.OCCUPIED
+        else:
+            self.state = RoomState.IDLE
+            
+        self._update_ha_state()
+
     async def handle_event(self, event_type: str, payload=None):
         """Handle important room events only."""
-
         payload = payload or {}
 
         if event_type == "occupancy_changed":
-            self.state = (
-                RoomState.OCCUPIED if payload.get("occupied") else RoomState.IDLE
-            )
-            self._update_ha_state()
+            self.is_occupied = bool(payload.get("occupied"))
+            self._evaluate_state()
 
         elif event_type == "global_mode_changed":
-            mode = payload.get("mode")
-
-            if mode == "night":
-                self.state = RoomState.NIGHT
-            elif mode == "away":
-                self.state = RoomState.AWAY
-            
-            self._update_ha_state()
+            self.global_mode = payload.get("mode", "normal")
+            self._evaluate_state()
