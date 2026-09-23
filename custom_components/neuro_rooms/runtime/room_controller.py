@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from enum import Enum
+from copy import deepcopy
 from typing import Any
+
+from ..const import EVENT_DESIRED_CHANGED
 
 
 class RoomState(str, Enum):
@@ -43,6 +46,8 @@ class RoomController:
         """Rebuild room context and resolve its desired behavior."""
         from ..helpers import select_profile
 
+        previous_profile = self.selected_profile
+        previous_desired = deepcopy(self.desired)
         self.global_context_mode = global_mode
         self.global_modifiers = global_modifiers or []
         self.context = {
@@ -58,6 +63,18 @@ class RoomController:
         self.selected_profile = profile.get("id") or profile.get("name") if profile else None
         self.desired = dict(profile.get("desired", {})) if profile else {}
         self._update_ha_state()
+        if self.selected_profile != previous_profile or self.desired != previous_desired:
+            self.hass.bus.async_fire(
+                EVENT_DESIRED_CHANGED,
+                {
+                    "room_id": self.room_id,
+                    "entity_id": self._entity.entity_id if self._entity else None,
+                    "room_config": deepcopy(self.config),
+                    "context": deepcopy(self.context),
+                    "selected_profile": self.selected_profile,
+                    "desired": deepcopy(self.desired),
+                },
+            )
 
     def set_entity(self, entity):
         """Link HA entity to controller."""
