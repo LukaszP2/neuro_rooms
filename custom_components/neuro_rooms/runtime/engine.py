@@ -47,22 +47,19 @@ class NeuroRoomsEngine:
                     is_occupied = new_state.state == "on"
                     await self.rooms[room_id].handle_event("occupancy_changed", {"occupied": is_occupied})
 
-            # Detect Neuro Modes global mode switches:
-            # Expected format: switch.neuro_modes_<mode>_stan (e.g. domowy, noc)
-            if entity_id.startswith("switch.neuro_modes_") and entity_id.endswith("_stan"):
-                mode_slug = entity_id[len("switch.neuro_modes_"):-len("_stan")]
+            # Detect Neuro Modes global mode from select entity:
+            if entity_id == "select.engine_neuro_modes_tryb_domu":
+                mode_val = str(new_state.state).lower()
                 
-                # Only react if the mode was turned ON
-                if new_state.state == "on":
-                    mapped_mode = "normal"
-                    if mode_slug == "noc":
-                        mapped_mode = "night"
-                    elif mode_slug in ["poza_domem", "away"]:
-                        mapped_mode = "away"
-                    
-                    # Distribute to all rooms
-                    for room_controller in self.rooms.values():
-                        await room_controller.handle_event("global_mode_changed", {"mode": mapped_mode})
+                mapped_mode = "normal"
+                if "noc" in mode_val or "night" in mode_val:
+                    mapped_mode = "night"
+                elif "poza" in mode_val or "away" in mode_val:
+                    mapped_mode = "away"
+                
+                # Distribute to all rooms
+                for room_controller in self.rooms.values():
+                    await room_controller.handle_event("global_mode_changed", {"mode": mapped_mode})
 
         # Listen to all binary_sensors (this is safe as we quickly filter by string prefix)
         self._unsubs.append(
