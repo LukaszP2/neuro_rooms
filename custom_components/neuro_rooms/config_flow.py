@@ -15,6 +15,8 @@ from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
+    EntitySelector,
+    EntitySelectorConfig,
     TextSelector,
     TextSelectorConfig,
 )
@@ -34,6 +36,7 @@ from .const import (
     CONF_MODIFIER_NAME,
     CONF_MODIFIER_PRIORITY,
     CONF_MODIFIERS,
+    CONF_ROOM_PRESENCE_ENTITY,
     CONF_NAME,
     CONF_ROOMS,
     CONF_SOURCE,
@@ -315,14 +318,18 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
 
         if user_input is not None:
             updated = {
+                **room,
                 CONF_ID: room[CONF_ID],
-                CONF_NAME: room[
-                    CONF_NAME
-                ],  # keep paired room name, no second room list here
+                CONF_NAME: room[CONF_NAME],
                 CONF_SOURCE: room.get(CONF_SOURCE, "manual"),
                 CONF_MODE: user_input[CONF_MODE],
                 CONF_MODIFIER: normalize_modifier(user_input.get(CONF_MODIFIER)),
             }
+            presence_entity = user_input.get(CONF_ROOM_PRESENCE_ENTITY)
+            if presence_entity:
+                updated[CONF_ROOM_PRESENCE_ENTITY] = presence_entity
+            else:
+                updated.pop(CONF_ROOM_PRESENCE_ENTITY, None)
             w[CONF_ROOMS] = replace_by_id(w[CONF_ROOMS], updated)
             await self._persist()
             return self.async_show_menu(
@@ -348,6 +355,10 @@ class NeuroRoomsOptionsFlow(OptionsFlowWithReload):
                 ): SelectSelector(
                     SelectSelectorConfig(options=mod_opts, mode=SelectSelectorMode.LIST)
                 ),
+                vol.Optional(
+                    CONF_ROOM_PRESENCE_ENTITY,
+                    default=room.get(CONF_ROOM_PRESENCE_ENTITY),
+                ): EntitySelector(EntitySelectorConfig(domain="binary_sensor")),
             }
         )
         return self.async_show_form(step_id="rooms_edit_form", data_schema=schema)
