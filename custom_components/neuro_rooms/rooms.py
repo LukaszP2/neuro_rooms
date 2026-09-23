@@ -42,6 +42,6 @@ def build_advanced_room_payload(user_input: dict[str, Any]) -> dict[str, Any]:
     """Normalize an advanced room form into stored payload."""
     payload = parse_json_payload(user_input[CONF_ROOM_ADVANCED_JSON])
     if not isinstance(payload, dict):
-        raise ValueError("Advanced room JSON must be a JSON object")
+        raise TypeError("Advanced room JSON must be a JSON object")
     payload.setdefault("kind", "advanced")
     return payload

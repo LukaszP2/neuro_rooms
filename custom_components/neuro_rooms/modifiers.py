@@ -28,7 +28,9 @@ DEFAULT_MODIFIERS: list[dict[str, Any]] = [
 DEFAULT_MODIFIER_NAMES = [modifier["name"] for modifier in DEFAULT_MODIFIERS]
 
 
-def normalize_modifier_names(modifiers: list[dict[str, Any]] | list[str] | None) -> list[str]:
+def normalize_modifier_names(
+    modifiers: list[dict[str, Any]] | list[str] | None,
+) -> list[str]:
     """Return a stable list of modifier names for selectors."""
     if not modifiers:
         return list(DEFAULT_MODIFIER_NAMES)

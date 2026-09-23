@@ -9,17 +9,7 @@
           "engine_name": "Engine name",
           "auto_discovery": "Enable auto discovery"
         }
-      },
-      "engine_autodiscovery_confirm": {
-        "title": "Confirm auto discovery",
-        "description": "Enabling auto discovery may overwrite your current room setup.",
-        "data": {
-          "confirm": "I understand and want to continue"
-        }
       }
-    },
-    "abort": {
-      "single_instance_allowed": "Only one Engine Neuro Rooms instance is allowed"
     }
   },
   "options": {

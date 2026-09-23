@@ -1,24 +1,15 @@
 {
+  "title": "Neuro Rooms",
   "config": {
     "step": {
       "user": {
         "title": "Engine Neuro Rooms",
         "description": "Utwórz główny silnik Neuro Rooms.",
         "data": {
-          "engine_name": "Nazwa silnika",
-          "auto_discovery": "Włącz auto discovery"
-        }
-      },
-      "engine_autodiscovery_confirm": {
-        "title": "Potwierdź auto discovery",
-        "description": "Włączenie auto discovery może nadpisać obecną konfigurację pokoi.",
-        "data": {
-          "confirm": "Rozumiem i chcę kontynuować"
+          "engine_name": "Engine name",
+          "auto_discovery": "Enable auto discovery"
         }
       }
-    },
-    "abort": {
-      "single_instance_allowed": "Dozwolona jest tylko jedna instancja Engine Neuro Rooms"
     }
   },
   "options": {
@@ -27,172 +18,172 @@
         "title": "Neuro Rooms",
         "description": "Konfiguracja z menu",
         "menu_options": {
-          "engine": "Silnik",
-          "rooms": "Pokoje",
-          "modes": "Mode",
-          "modifiers": "Modyfikatory"
+          "engine": "Engine",
+          "rooms": "Rooms",
+          "modes": "Modes",
+          "modifiers": "Modifiers"
         }
       },
       "engine": {
-        "title": "Silnik",
+        "title": "Engine",
         "data": {
-          "engine_name": "Nazwa silnika",
-          "auto_discovery": "Włącz auto discovery"
+          "engine_name": "Engine name",
+          "auto_discovery": "Enable auto discovery"
         }
       },
       "engine_autodiscovery_confirm": {
-        "title": "Potwierdź auto discovery",
+        "title": "Confirm auto discovery",
         "description": "Włączenie auto discovery może nadpisać obecną konfigurację pokoi.",
         "data": {
-          "confirm": "Rozumiem i chcę kontynuować"
+          "confirm": "I understand and want to continue"
         }
       },
       "rooms": {
-        "title": "Pokoje",
+        "title": "Rooms",
         "menu_options": {
-          "rooms_add": "Dodaj pokój",
-          "rooms_discover": "Wykryj pokoje automatycznie",
-          "rooms_edit": "Edytuj pokój",
-          "rooms_remove": "Usuń pokój",
-          "init": "Wstecz"
+          "rooms_add": "Add room",
+          "rooms_discover": "Auto-discover rooms",
+          "rooms_edit": "Edit room",
+          "rooms_remove": "Remove room",
+          "init": "Back"
         }
       },
       "rooms_add": {
-        "title": "Dodaj pokój",
+        "title": "Add room",
         "data": {
-          "name": "Pokój / obszar",
+          "name": "Room / area",
           "mode": "Mode",
           "modifier": "Modifier"
         }
       },
       "rooms_discover": {
-        "title": "Auto-wykrywanie pokoi",
+        "title": "Auto-discover rooms",
         "data": {
-          "run_discovery": "Uruchom wykrywanie teraz"
+          "run_discovery": "Run discovery now"
         }
       },
       "rooms_discover_confirm": {
-        "title": "Potwierdź wykrywanie pokoi",
+        "title": "Confirm room discovery",
         "description": "Uruchomienie wykrywania może dodać lub zastąpić ustawienia pokoi.",
         "data": {
-          "confirm": "Rozumiem i chcę kontynuować"
+          "confirm": "I understand and want to continue"
         }
       },
       "rooms_edit": {
-        "title": "Edytuj pokój",
+        "title": "Edit room",
         "data": {
-          "id": "Pokój"
+          "id": "Room"
         }
       },
       "rooms_edit_form": {
-        "title": "Edytuj pokój",
+        "title": "Edit room",
         "data": {
-          "name": "Pokój / obszar",
+          "name": "Room / area",
           "mode": "Mode",
           "modifier": "Modifier"
         }
       },
       "rooms_remove": {
-        "title": "Usuń pokój",
+        "title": "Remove room",
         "data": {
-          "id": "Pokój"
+          "id": "Room"
         }
       },
       "rooms_remove_confirm": {
-        "title": "Potwierdź usunięcie pokoju",
+        "title": "Confirm room removal",
         "description": "Na pewno chcesz usunąć ten pokój?",
         "data": {
-          "confirm": "Tak, usuń"
+          "confirm": "Yes, remove it"
         }
       },
       "modes": {
-        "title": "Mode",
+        "title": "Modes",
         "menu_options": {
-          "modes_add": "Dodaj mode",
-          "modes_edit": "Edytuj mode",
-          "modes_remove": "Usuń mode",
-          "init": "Wstecz"
+          "modes_add": "Add mode",
+          "modes_edit": "Edit mode",
+          "modes_remove": "Remove mode",
+          "init": "Back"
         }
       },
       "modes_add": {
-        "title": "Dodaj mode",
+        "title": "Add mode",
         "data": {
-          "mode_name": "Nazwa mode",
-          "mode_lighting": "Obsługuje światło",
-          "mode_hvac": "Obsługuje HVAC",
-          "mode_media": "Obsługuje multimedia"
+          "mode_name": "Mode name",
+          "mode_lighting": "Supports lighting",
+          "mode_hvac": "Supports HVAC",
+          "mode_media": "Supports media"
         }
       },
       "modes_edit": {
-        "title": "Edytuj mode",
+        "title": "Edit mode",
         "data": {
           "id": "Mode"
         }
       },
       "modes_edit_form": {
-        "title": "Edytuj mode",
+        "title": "Edit mode",
         "data": {
-          "mode_name": "Nazwa mode",
-          "mode_lighting": "Obsługuje światło",
-          "mode_hvac": "Obsługuje HVAC",
-          "mode_media": "Obsługuje multimedia"
+          "mode_name": "Mode name",
+          "mode_lighting": "Supports lighting",
+          "mode_hvac": "Supports HVAC",
+          "mode_media": "Supports media"
         }
       },
       "modes_remove": {
-        "title": "Usuń mode",
+        "title": "Remove mode",
         "data": {
           "id": "Mode"
         }
       },
       "modes_remove_confirm": {
-        "title": "Potwierdź usunięcie mode",
+        "title": "Confirm mode removal",
         "description": "Na pewno chcesz usunąć ten mode?",
         "data": {
-          "confirm": "Tak, usuń"
+          "confirm": "Yes, remove it"
         }
       },
       "modifiers": {
-        "title": "Modyfikatory",
+        "title": "Modifiers",
         "menu_options": {
-          "modifiers_add": "Dodaj modyfikator",
-          "modifiers_edit": "Edytuj modyfikator",
-          "modifiers_remove": "Usuń modyfikator",
-          "init": "Wstecz"
+          "modifiers_add": "Add modifier",
+          "modifiers_edit": "Edit modifier",
+          "modifiers_remove": "Remove modifier",
+          "init": "Back"
         }
       },
       "modifiers_add": {
-        "title": "Dodaj modyfikator",
+        "title": "Add modifier",
         "data": {
-          "modifier_name": "Nazwa modyfikatora",
-          "modifier_base_mode": "Bazowy mode",
-          "modifier_priority": "Priorytet"
+          "modifier_name": "Modifier name",
+          "modifier_base_mode": "Base mode",
+          "modifier_priority": "Priority"
         }
       },
       "modifiers_edit": {
-        "title": "Edytuj modyfikator",
+        "title": "Edit modifier",
         "data": {
-          "id": "Modyfikator"
+          "id": "Modifier"
         }
       },
       "modifiers_edit_form": {
-        "title": "Edytuj modyfikator",
+        "title": "Edit modifier",
         "data": {
-          "modifier_name": "Nazwa modyfikatora",
-          "modifier_base_mode": "Bazowy mode",
-          "modifier_priority": "Priorytet"
+          "modifier_name": "Modifier name",
+          "modifier_base_mode": "Base mode",
+          "modifier_priority": "Priority"
         }
       },
       "modifiers_remove": {
-        "title": "Usuń modyfikator",
+        "title": "Remove modifier",
         "data": {
-          "id": "Modyfikator"
+          "id": "Modifier"
         }
       },
       "modifiers_remove_confirm": {
-        "title": "Potwierdź usunięcie modyfikatora",
+        "title": "Confirm modifier removal",
         "description": "Na pewno chcesz usunąć ten modyfikator?",
         "data": {
-          "confirm": "Tak, usuń"
+          "confirm": "Yes, remove it"
         }
       }
     }

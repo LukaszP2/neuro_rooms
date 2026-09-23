@@ -9,9 +9,5 @@
   "config_flow": true,
   "iot_class": "local_push",
   "integration_type": "hub",
-  "dependencies": [],
-  "homeassistant": "2026.5.0",
-  "quality_scale": "custom",
-  "loggers": ["custom_components.neuro_rooms"],
-  "diagnostics": true
+  "dependencies": []
 }
