@@ -80,7 +80,8 @@
         "data": {
           "name": "Room / area",
           "mode": "Mode",
-          "modifier": "Modifier"
+          "modifier": "Modifier",
+          "presence_entity": "Czujnik obecności (opcjonalnie)"
         }
       },
       "rooms_remove": {
