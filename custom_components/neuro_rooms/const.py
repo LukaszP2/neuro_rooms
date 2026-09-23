@@ -1,6 +1,7 @@
 """Constants for Neuro Rooms."""
 
 DOMAIN = "neuro_rooms"
+EVENT_DESIRED_CHANGED = "neuro_rooms_desired_changed"
 
 # ---------------------------------------------------------------------------
 # Engine / entry-level config
