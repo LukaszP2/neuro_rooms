@@ -126,6 +126,22 @@ def normalize_modifier(value: str | None) -> str | None:
     return None if value in (None, "", NO_MODIFIER_VALUE) else value
 
 
+def select_profile(context: dict[str, Any], profiles: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Select the most specific matching behavior profile."""
+    matches: list[tuple[int, int, dict[str, Any]]] = []
+    for index, profile in enumerate(profiles):
+        when = profile.get("when", {})
+        if not isinstance(when, dict):
+            continue
+        if any(context.get(key) != value for key, value in when.items() if key != "global_modifiers"):
+            continue
+        required_modifiers = when.get("global_modifiers", [])
+        if not set(required_modifiers).issubset(set(context.get("global_modifiers", []))):
+            continue
+        matches.append((len(when) + len(required_modifiers), -index, profile))
+    return max(matches, key=lambda item: (item[0], item[1]))[2] if matches else None
+
+
 async def async_discover_global_mode_entity(hass: HomeAssistant) -> str | None:
     """Find Neuro Modes main select entity."""
     registry = er.async_get(hass)
